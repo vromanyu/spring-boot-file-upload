@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    username: dev
+    password: dev
+    url: jdbc:h2:mem:devDb
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  flyway:
+    enabled: false

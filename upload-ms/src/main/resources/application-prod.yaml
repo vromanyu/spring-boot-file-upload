@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    username: vromanyu
+    password: vromanyu
+    url: jdbc:postgresql://localhost:5432/vromanyu_db
+  flyway:
+    enabled: true
+    default-schema: file_upload
+  jpa:
+    hibernate:
+      ddl-auto: validate
