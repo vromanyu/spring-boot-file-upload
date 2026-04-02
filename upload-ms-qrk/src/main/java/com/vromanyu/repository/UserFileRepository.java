@@ -16,8 +16,9 @@ public class UserFileRepository {
     @Inject
     EntityManager entityManager;
 
-    public void save(UserFile userFile) {
+    public UserFile save(UserFile userFile) {
         entityManager.persist(userFile);
+        return userFile;
     }
 
     public void delete(UserFile userFile) {
