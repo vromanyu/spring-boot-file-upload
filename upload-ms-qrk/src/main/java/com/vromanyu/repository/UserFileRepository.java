@@ -30,7 +30,9 @@ public class UserFileRepository {
     }
 
     public Optional<UserFile> findByFileUuid(String fileUuid) {
-        return Optional.ofNullable(entityManager.find(UserFile.class, fileUuid));
+        TypedQuery<UserFile> query = entityManager.createQuery("select u from UserFile u where u.fileUuid = :fileUuid", UserFile.class);
+        query.setParameter("fileUuid", fileUuid);
+        return query.getResultStream().findFirst();
     }
 
     public Set<UserFile> findAllByUserName(String userName) {
