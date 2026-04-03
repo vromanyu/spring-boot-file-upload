@@ -14,6 +14,7 @@ import org.jboss.logging.Logger;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -39,7 +40,7 @@ public class FileUploadServiceImpl implements FileUploadService {
             userFile.setFileUuid(UUID.randomUUID().toString());
             userFile.setFileName(fileUploadRequest.data().fileName());
             userFile.setUserName("test");
-            userFile.setUploadedAt(OffsetDateTime.now());
+            userFile.setUploadedAt(OffsetDateTime.now(ZoneOffset.UTC));
             userFile.setFileData(Files.readAllBytes(fileUploadRequest.data().uploadedFile()));
             userFile.setStatus(UploadStatus.CREATED);
             UserFile savedFile = userFileRepository.save(userFile);
