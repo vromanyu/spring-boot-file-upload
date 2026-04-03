@@ -7,6 +7,8 @@ import com.vromanyu.dto.FileUploadStatusResponse;
 
 public interface FileUploadService {
     FileUploadResponse uploadFile(FileUploadRequest fileUploadRequest);
+
     FileUploadStatusResponse getFileStatus(String fileUuid);
+
     AllUserFilesResponse getAllUserFiles(String userName);
 }
