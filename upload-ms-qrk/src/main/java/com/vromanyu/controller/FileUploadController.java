@@ -6,7 +6,10 @@ import com.vromanyu.dto.FileUploadRequest;
 import com.vromanyu.dto.FileUploadResponse;
 import com.vromanyu.dto.FileUploadStatusResponse;
 import com.vromanyu.service.FileUploadService;
+import io.quarkus.security.Authenticated;
+import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.common.annotation.RunOnVirtualThread;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -23,6 +26,10 @@ public class FileUploadController {
     @DatabaseStorage
     FileUploadService fileUploadService;
 
+    @Inject
+    SecurityIdentity securityIdentity;
+
+    @Authenticated
     @POST
     @Path("/upload")
     @Produces(MediaType.APPLICATION_JSON)
@@ -34,6 +41,7 @@ public class FileUploadController {
         return RestResponse.ok(uploadResponse);
     }
 
+    @Authenticated
     @GET
     @Path("/upload/{fileUuid}/status")
     @Produces(MediaType.APPLICATION_JSON)
@@ -44,13 +52,15 @@ public class FileUploadController {
         return RestResponse.ok(response);
     }
 
+    @Authenticated
     @GET
     @Path("/upload/all/status")
     @Produces(MediaType.APPLICATION_JSON)
     @RunOnVirtualThread
     public RestResponse<AllUserFilesResponse> getAllUserFiles() {
-        logger.info("received retrieve request for user: 'test'");
-        AllUserFilesResponse response = fileUploadService.getAllUserFiles("test");
+        String userName = securityIdentity.getPrincipal().toString();
+        logger.info("received retrieve request for user: '" + userName + "'");
+        AllUserFilesResponse response = fileUploadService.getAllUserFiles(userName);
         return RestResponse.ok(response);
     }
 }
