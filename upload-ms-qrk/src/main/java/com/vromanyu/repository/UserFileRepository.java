@@ -21,14 +21,6 @@ public class UserFileRepository {
         return userFile;
     }
 
-    public void delete(UserFile userFile) {
-        entityManager.remove(userFile);
-    }
-
-    public UserFile update(UserFile userFile) {
-        return entityManager.merge(userFile);
-    }
-
     public Optional<UserFile> findByFileUuid(String fileUuid) {
         TypedQuery<UserFile> query = entityManager.createQuery("select u from UserFile u where u.fileUuid = :fileUuid", UserFile.class);
         query.setParameter("fileUuid", fileUuid);
