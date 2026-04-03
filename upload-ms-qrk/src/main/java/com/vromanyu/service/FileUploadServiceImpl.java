@@ -53,6 +53,7 @@ public class FileUploadServiceImpl implements FileUploadService {
     }
 
     @Override
+    @Transactional
     public FileUploadStatusResponse getFileStatus(String fileUuid) {
         logger.info("obtaining file with file_uuid: " + fileUuid);
         UserFile userFile = userFileRepository.findByFileUuid(fileUuid).orElseThrow(() -> new FileNotFoundException("file with file_uuid " + fileUuid + " not found"));
@@ -61,6 +62,7 @@ public class FileUploadServiceImpl implements FileUploadService {
     }
 
     @Override
+    @Transactional
     public AllUserFilesResponse getAllUserFiles(String userName) {
         logger.info("retrieving all files for user: '" + userName + "'");
         Set<UserFile> allUserFiles = userFileRepository.findAllByUserName(userName);
