@@ -21,10 +21,15 @@ public class UserFile {
     @Column(name = "file_name", nullable = false)
     private String fileName;
 
-    @Lob
-    @Column(name = "file_data", nullable = false)
+    @Column(name = "url", length = 1024)
+    private String url;
+
+    @Column(name = "file_data", columnDefinition = "bytea")
     @Basic(fetch = FetchType.LAZY)
     private byte[] fileData;
+
+    @Column(name = "file_content_type", nullable = false)
+    private String fileContentType;
 
     @Column(name = "user_name", nullable = false)
     private String userName;
@@ -35,6 +40,9 @@ public class UserFile {
     @Enumerated(EnumType.STRING)
     @Column(name = "upload_status", nullable = false)
     private UploadStatus status;
+
+    @Column(name = "expiration_date")
+    private OffsetDateTime expirationDate;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
@@ -68,6 +76,14 @@ public class UserFile {
         this.fileName = fileName;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     public byte[] getFileData() {
         return fileData;
     }
@@ -82,6 +98,14 @@ public class UserFile {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getFileContentType() {
+        return fileContentType;
+    }
+
+    public void setFileContentType(String fileContentType) {
+        this.fileContentType = fileContentType;
     }
 
     public OffsetDateTime getUploadedAt() {
@@ -100,6 +124,14 @@ public class UserFile {
         this.status = status;
     }
 
+    public OffsetDateTime getExpirationDate() {
+        return expirationDate;
+    }
+
+    public void setExpirationDate(OffsetDateTime expirationDate) {
+        this.expirationDate = expirationDate;
+    }
+
     public OffsetDateTime getCreatedAt() {
         return createdAt;
     }
@@ -115,5 +147,4 @@ public class UserFile {
     public void setUpdatedAt(OffsetDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
-
 }
