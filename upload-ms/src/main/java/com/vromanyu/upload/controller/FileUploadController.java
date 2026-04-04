@@ -1,9 +1,6 @@
 package com.vromanyu.upload.controller;
 
-import com.vromanyu.upload.dto.AllUserFilesResponse;
-import com.vromanyu.upload.dto.FileUploadRequest;
-import com.vromanyu.upload.dto.FileUploadResponse;
-import com.vromanyu.upload.dto.FileUploadStatusResponse;
+import com.vromanyu.upload.dto.*;
 import com.vromanyu.upload.service.FileUploadService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -43,6 +40,13 @@ public class FileUploadController {
         String userName = authentication.getName();
         logger.info("received get all user files request for user: '{}'", userName);
         AllUserFilesResponse response = fileUploadService.getAllUserFiles(userName);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping(value = "/upload/{fileUuid}/url", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<FileUrlResponse> getFileUrl(@PathVariable String fileUuid) {
+        logger.info("received file url request for file_uuid: {}", fileUuid);
+        FileUrlResponse response = fileUploadService.getFileUrl(fileUuid);
         return ResponseEntity.ok(response);
     }
 }
