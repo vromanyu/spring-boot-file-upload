@@ -1,7 +1,9 @@
 package com.vromanyu.upload.resolver;
 
+import com.vromanyu.upload.exception.BlobNotFoundException;
 import com.vromanyu.upload.exception.FileNameNotMatchException;
 import com.vromanyu.upload.exception.FileNotFoundException;
+import com.vromanyu.upload.exception.FileNotUploadedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -36,6 +38,16 @@ public class GlobalExceptionResolver {
 
     @ExceptionHandler(NoResourceFoundException.class)
     public ProblemDetail handleNoResourceFoundException(NoResourceFoundException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(FileNotUploadedException.class)
+    public ProblemDetail handleFileNotUploadedException(FileNotUploadedException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(BlobNotFoundException.class)
+    public ProblemDetail handleBlobNotFoundException(BlobNotFoundException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
