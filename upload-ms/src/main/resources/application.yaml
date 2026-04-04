@@ -12,5 +12,8 @@ spring:
       hibernate:
         format_sql: true
     open-in-view: false
+  config:
+    import: file:./.env/secrets.yaml
 server:
   port: 8082
+
