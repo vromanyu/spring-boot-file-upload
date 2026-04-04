@@ -3,7 +3,7 @@
   <component name="DiffGenerationConfig">
     <option name="snapshotDb" value="false" />
     <option name="snapshotModelValue" value="upload-ms:upload-ms" />
-    <option name="sourceModelValue" value="upload-ms:upload-ms" />
+    <option name="sourceModelValue" value="upload-ms:entityManagerFactory" />
     <option name="targetDbValue" value="c726d352-9fdd-43e0-bf05-0e2a0bc9090b" />
   </component>
 </project>

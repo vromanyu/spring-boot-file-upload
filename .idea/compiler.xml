@@ -7,11 +7,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="upload-ms" />
-        <module name="upload-ms-qrk" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="core" target="26" />
+      <module name="upload-ms-qrk" target="25" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
