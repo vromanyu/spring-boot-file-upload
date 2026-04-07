@@ -1,6 +1,6 @@
 package com.vromanyu.upload.service;
 
-import com.vromanyu.upload.entity.UserFile;
+import com.vromanyu.upload.aggregate.UserFile;
 import com.vromanyu.upload.repository.UserFileRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

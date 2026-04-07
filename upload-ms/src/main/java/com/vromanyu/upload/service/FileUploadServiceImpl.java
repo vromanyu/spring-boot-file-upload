@@ -3,8 +3,8 @@ package com.vromanyu.upload.service;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BucketInfo;
 import com.google.cloud.storage.Storage;
+import com.vromanyu.upload.aggregate.UserFile;
 import com.vromanyu.upload.dto.*;
-import com.vromanyu.upload.entity.UserFile;
 import com.vromanyu.upload.event.FileUploadReceivedEvent;
 import com.vromanyu.upload.exception.BlobNotFoundException;
 import com.vromanyu.upload.exception.FileNameNotMatchException;
@@ -20,8 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -56,7 +55,7 @@ public class FileUploadServiceImpl implements FileUploadService {
             userFile.setFileUuid(UUID.randomUUID().toString());
             userFile.setFileName(data.getOriginalFilename());
             userFile.setUserName("test");
-            userFile.setUploadedAt(OffsetDateTime.now());
+            userFile.setUploadedAt(Instant.now());
             userFile.setFileData(data.getBytes());
             userFile.setFileContentType(data.getContentType());
             userFile.setStatus(UploadStatus.CREATED);
@@ -107,7 +106,7 @@ public class FileUploadServiceImpl implements FileUploadService {
         if (userFile.getStatus() != UploadStatus.SUCCESS) {
             throw new FileNotUploadedException("file with file_uuid " + fileUuid + " is not uploaded yet");
         }
-        if (userFile.getExpirationDate().isBefore(OffsetDateTime.now(ZoneOffset.UTC))) {
+        if (userFile.getExpirationDate().isBefore(Instant.now())) {
             logger.info("file url expired for file_uuid: {}", fileUuid);
             Blob blob = storage.get(bucketInfo.getName(), userFile.getUserName() + "/" + userFile.getFileUuid() + "." + userFile.getFileContentType().substring(userFile.getFileContentType().indexOf("/") + 1));
             if (blob == null) {
@@ -115,7 +114,7 @@ public class FileUploadServiceImpl implements FileUploadService {
             }
             String url = blob.signUrl(1, TimeUnit.DAYS).toString();
             logger.info("generated new file url for file_uuid: {}", fileUuid);
-            OffsetDateTime expirationDate = OffsetDateTime.now(ZoneOffset.UTC).plus(Duration.ofDays(1));
+            Instant expirationDate = Instant.now().plus(Duration.ofDays(1));
             userFile.setUrl(url);
             userFile.setExpirationDate(expirationDate);
             userFileRepository.save(userFile);

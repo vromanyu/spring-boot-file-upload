@@ -1,8 +1,8 @@
 package com.vromanyu.upload.service;
 
 import com.google.cloud.storage.Storage;
+import com.vromanyu.upload.aggregate.UserFile;
 import com.vromanyu.upload.dto.UploadStatus;
-import com.vromanyu.upload.entity.UserFile;
 import com.vromanyu.upload.event.FileUploadReceivedEvent;
 import com.vromanyu.upload.exception.FileNotFoundException;
 import com.vromanyu.upload.repository.UserFileRepository;
@@ -16,8 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.time.Duration;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.Instant;
 
 @Component
 public class FileUploadProcessorImpl implements FileUploadProcessor {
@@ -44,7 +43,7 @@ public class FileUploadProcessorImpl implements FileUploadProcessor {
         }
         logger.info("file found, processing file");
         String blobUrl = BlobUtilities.uploadBlobAndGetUrl(storage, userFile);
-        OffsetDateTime expirationDate = OffsetDateTime.now(ZoneOffset.UTC).plus(Duration.ofDays(1));
+        Instant expirationDate = Instant.now().plus(Duration.ofDays(1));
         logger.info("updating row {}", userFile.getId());
         userFile.setFileData(null);
         userFile.setStatus(UploadStatus.SUCCESS);

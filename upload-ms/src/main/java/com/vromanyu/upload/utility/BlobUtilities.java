@@ -3,7 +3,7 @@ package com.vromanyu.upload.utility;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
-import com.vromanyu.upload.entity.UserFile;
+import com.vromanyu.upload.aggregate.UserFile;
 
 import java.util.concurrent.TimeUnit;
 
