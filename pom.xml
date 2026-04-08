@@ -8,5 +8,6 @@
 
     <modules>
         <module>upload-ms</module>
+        <module>upload-ms-quarkus</module>
     </modules>
 </project>
