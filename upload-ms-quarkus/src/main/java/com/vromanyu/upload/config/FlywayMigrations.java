@@ -16,7 +16,7 @@ public class FlywayMigrations {
     @Inject
     Logger logger;
 
-    public void repairAndMigrate(@Observes StartupEvent startupEvent){
+    public void repairAndMigrate(@Observes StartupEvent startupEvent) {
         logger.info("repairing and migrating database");
         flyway.repair();
         flyway.migrate();
