@@ -4,6 +4,6 @@ import jakarta.validation.constraints.NotNull;
 import org.jboss.resteasy.reactive.RestForm;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
-public record FileUploadRequest(@NotNull String fileName,
+public record FileUploadRequest(@NotNull @RestForm String fileName,
                                 @NotNull @RestForm FileUpload data) {
 }
