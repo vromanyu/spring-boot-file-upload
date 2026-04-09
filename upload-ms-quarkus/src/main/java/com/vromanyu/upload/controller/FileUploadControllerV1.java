@@ -2,6 +2,7 @@ package com.vromanyu.upload.controller;
 
 import com.vromanyu.upload.dto.FileUploadRequest;
 import com.vromanyu.upload.dto.FileUploadResponse;
+import com.vromanyu.upload.dto.FileUploadStatusResponse;
 import com.vromanyu.upload.service.FileUploadService;
 import io.quarkus.logging.Log;
 import io.smallrye.common.annotation.RunOnVirtualThread;
@@ -30,5 +31,15 @@ public class FileUploadControllerV1 {
         FileUploadResponse fileUploadResponse = fileUploadService.uploadFile(fileUploadRequest);
         URI location = uriInfo.getAbsolutePathBuilder().path(fileUploadResponse.fileUuid()).build();
         return RestResponse.ResponseBuilder.ok(fileUploadResponse).location(location).build();
+    }
+
+    @RunOnVirtualThread
+    @GET
+    @Path("/{fileUuid}/status")
+    @Produces(MediaType.APPLICATION_JSON)
+    public RestResponse<FileUploadStatusResponse> getFileStatus(@PathParam("fileUuid") String fileUuid) {
+        Log.infof("received file status request for file_uuid: %s", fileUuid);
+        FileUploadStatusResponse fileUploadStatusResponse = fileUploadService.getFileStatus(fileUuid);
+        return RestResponse.ResponseBuilder.ok(fileUploadStatusResponse).build();
     }
 }
