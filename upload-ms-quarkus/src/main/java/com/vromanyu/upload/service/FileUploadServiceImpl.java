@@ -17,7 +17,9 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import java.nio.file.Files;
 import java.time.Instant;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class FileUploadServiceImpl implements FileUploadService {
@@ -85,7 +87,16 @@ public class FileUploadServiceImpl implements FileUploadService {
 
     @Override
     public AllUserFilesStatusResponse getAllUserFiles(String userName) {
-        throw new UnsupportedOperationException();
+        Log.infof("retrieving all files for user: %s", userName);
+        TypedQuery<UserFile> query = entityManager.createQuery("select u from UserFile u where u.userName = :userName", UserFile.class);
+        query.setParameter("userName", userName);
+        Set<UserFileStatusResponse> userFiles = query.getResultStream()
+                .map(userFile -> new UserFileStatusResponse(userFile.fileUuid, userFile.fileName, userFile.status, userFile.uploadedAt))
+                .collect(Collectors.toSet());
+        Log.infof("retrieved %s files for user: %s", userFiles.size(), userName);
+        return new AllUserFilesStatusResponse(userName,
+                userFiles.size(),
+                userFiles);
     }
 
     @Override
