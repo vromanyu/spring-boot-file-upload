@@ -4,6 +4,7 @@ import com.vromanyu.upload.dto.*;
 import com.vromanyu.upload.entity.UserFile;
 import com.vromanyu.upload.enums.UploadStatus;
 import com.vromanyu.upload.exception.FileNotFoundException;
+import com.vromanyu.upload.exception.FileNotUploadedException;
 import com.vromanyu.upload.exception.FilesNamesNotMatchException;
 import io.quarkus.logging.Log;
 import io.quarkus.runtime.StartupEvent;
@@ -101,6 +102,31 @@ public class FileUploadServiceImpl implements FileUploadService {
 
     @Override
     public GetFileUrlResponse getFileUrl(String fileUuid) {
-        throw new UnsupportedOperationException();
+        Log.infof("retrieving file url for file_uuid: %s", fileUuid);
+        try {
+            TypedQuery<UserFile> query = entityManager.createQuery("select u from UserFile u where u.fileUuid = :fileUuid", UserFile.class);
+            query.setParameter("fileUuid", fileUuid);
+            UserFile userFile = query.getResultStream().findFirst().orElseThrow(() -> new FileNotFoundException(String.format("file with file_uuid: %s not found", fileUuid)));
+            if (userFile.status != UploadStatus.SUCCESS) {
+                throw new FileNotFoundException(String.format("file with file_uuid: %s is not uploaded. File status: '%s'", fileUuid, userFile.status));
+            }
+            return new GetFileUrlResponse(userFile.fileUuid,
+                    userFile.url,
+                    userFile.fileName,
+                    userFile.userName,
+                    userFile.status,
+                    userFile.uploadedAt,
+                    userFile.expirationDate);
+
+        } catch (Exception e) {
+            switch (e) {
+                case FileNotFoundException fileNotFoundException -> throw fileNotFoundException;
+                case FileNotUploadedException fileNotUploadedException -> throw fileNotUploadedException;
+                default -> {
+                    Log.errorf("error occurred while obtaining file url: %s", fileUuid, e);
+                    throw new RuntimeException("error occurred while obtaining file url", e);
+                }
+            }
+        }
     }
 }
