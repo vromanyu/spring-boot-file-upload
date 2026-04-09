@@ -7,7 +7,7 @@ import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 @Provider
 public class FilesNamesNotMatchExceptionMapper implements ExceptionMapper<FilesNamesNotMatchException> {
@@ -20,7 +20,7 @@ public class FilesNamesNotMatchExceptionMapper implements ExceptionMapper<FilesN
         BadRequestResponse badRequestResponse = new BadRequestResponse(
                 uriInfo.getPath(),
                 exception.getMessage(),
-                OffsetDateTime.now(),
+                Instant.now(),
                 Response.Status.BAD_REQUEST.getStatusCode()
         );
         return Response.status(Response.Status.BAD_REQUEST).entity(badRequestResponse).build();
