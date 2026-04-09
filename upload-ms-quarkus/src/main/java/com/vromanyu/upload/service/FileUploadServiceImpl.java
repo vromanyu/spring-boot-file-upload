@@ -41,8 +41,8 @@ public class FileUploadServiceImpl implements FileUploadService {
 
     @Override
     @Transactional
-    public FileUploadResponse uploadFile(FileUploadRequest fileUploadRequest) {
-        Log.infof("saving file: %s to the database", fileUploadRequest);
+    public FileUploadResponse uploadFile(FileUploadRequest fileUploadRequest, String userName) {
+        Log.infof("saving file: %s to the database for user %s", fileUploadRequest, userName);
         FileUpload fileData = fileUploadRequest.data();
         try {
             if (!fileData.fileName().equalsIgnoreCase(fileUploadRequest.fileName())) {
@@ -51,7 +51,7 @@ public class FileUploadServiceImpl implements FileUploadService {
             UserFile userFile = new UserFile();
             userFile.fileUuid = UUID.randomUUID().toString();
             userFile.fileName = fileData.fileName();
-            userFile.userName = "test";
+            userFile.userName = userName;
             userFile.uploadedAt = Instant.now();
             userFile.fileData = Files.readAllBytes(fileData.filePath());
             userFile.fileContentType = fileData.contentType();
@@ -82,11 +82,12 @@ public class FileUploadServiceImpl implements FileUploadService {
     }
 
     @Override
-    public FileUploadStatusResponse getFileStatus(String fileUuid) {
+    public FileUploadStatusResponse getFileStatus(String fileUuid, String userName) {
         Log.infof("obtaining file with file_uuid: %s", fileUuid);
         try {
-            TypedQuery<UserFile> query = entityManager.createQuery("select u from UserFile u where u.fileUuid = :fileUuid", UserFile.class);
+            TypedQuery<UserFile> query = entityManager.createQuery("select u from UserFile u where u.fileUuid = :fileUuid and u.userName = :userName", UserFile.class);
             query.setParameter("fileUuid", fileUuid);
+            query.setParameter("userName", userName);
             UserFile userFile = query.getResultStream().findFirst().orElseThrow(() -> new FileNotFoundException(String.format("file with file_uuid: %s not found", fileUuid)));
             return new FileUploadStatusResponse(userFile.fileUuid,
                     userFile.fileName,
@@ -117,11 +118,12 @@ public class FileUploadServiceImpl implements FileUploadService {
     }
 
     @Override
-    public GetFileUrlResponse getFileUrl(String fileUuid) {
+    public GetFileUrlResponse getFileUrl(String fileUuid, String userName) {
         Log.infof("retrieving file url for file_uuid: %s", fileUuid);
         try {
-            TypedQuery<UserFile> query = entityManager.createQuery("select u from UserFile u where u.fileUuid = :fileUuid", UserFile.class);
+            TypedQuery<UserFile> query = entityManager.createQuery("select u from UserFile u where u.fileUuid = :fileUuid and u.userName = :userName", UserFile.class);
             query.setParameter("fileUuid", fileUuid);
+            query.setParameter("userName", userName);
             UserFile userFile = query.getResultStream().findFirst().orElseThrow(() -> new FileNotFoundException(String.format("file with file_uuid: %s not found", fileUuid)));
             if (userFile.status != UploadStatus.SUCCESS) {
                 throw new FileNotFoundException(String.format("file with file_uuid: %s is not uploaded. File status: '%s'", fileUuid, userFile.status));
