@@ -1,5 +1,6 @@
 package com.vromanyu.upload.controller;
 
+import com.vromanyu.upload.dto.AllUserFilesStatusResponse;
 import com.vromanyu.upload.dto.FileUploadRequest;
 import com.vromanyu.upload.dto.FileUploadResponse;
 import com.vromanyu.upload.dto.FileUploadStatusResponse;
@@ -11,6 +12,7 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.core.UriInfo;
 import org.jboss.resteasy.reactive.RestResponse;
 
@@ -41,5 +43,16 @@ public class FileUploadControllerV1 {
         Log.infof("received file status request for file_uuid: %s", fileUuid);
         FileUploadStatusResponse fileUploadStatusResponse = fileUploadService.getFileStatus(fileUuid);
         return RestResponse.ResponseBuilder.ok(fileUploadStatusResponse).build();
+    }
+
+    @RunOnVirtualThread
+    @GET
+    @Path("/all/status")
+    @Produces(MediaType.APPLICATION_JSON)
+    public RestResponse<AllUserFilesStatusResponse> getAllUserFiles(@Context SecurityContext securityContext) {
+        String userName = securityContext.getUserPrincipal() == null ? "test" : securityContext.getUserPrincipal().getName();
+        Log.infof("retrieving all files for user: %s", userName);
+        AllUserFilesStatusResponse allUserFilesStatusResponse = fileUploadService.getAllUserFiles(userName);
+        return RestResponse.ResponseBuilder.ok(allUserFilesStatusResponse).build();
     }
 }
