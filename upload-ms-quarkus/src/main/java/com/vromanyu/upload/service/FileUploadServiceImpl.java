@@ -3,6 +3,7 @@ package com.vromanyu.upload.service;
 import com.vromanyu.upload.dto.*;
 import com.vromanyu.upload.entity.UserFile;
 import com.vromanyu.upload.enums.UploadStatus;
+import com.vromanyu.upload.exception.FileNotFoundException;
 import com.vromanyu.upload.exception.FilesNamesNotMatchException;
 import io.quarkus.logging.Log;
 import io.quarkus.runtime.StartupEvent;
@@ -10,6 +11,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
@@ -55,13 +57,30 @@ public class FileUploadServiceImpl implements FileUploadService {
             Log.errorf("error occurred while saving file: %s", fileUploadRequest, e);
             if (e instanceof FilesNamesNotMatchException filesNamesNotMatchException)
                 throw filesNamesNotMatchException;
+            Log.errorf("error occurred while saving file: %s", fileUploadRequest, e);
             throw new RuntimeException("error occurred while saving file", e);
         }
     }
 
     @Override
     public FileUploadStatusResponse getFileStatus(String fileUuid) {
-        throw new UnsupportedOperationException();
+        Log.infof("obtaining file with file_uuid: %s", fileUuid);
+        try {
+            TypedQuery<UserFile> query = entityManager.createQuery("select u from UserFile u where u.fileUuid = :fileUuid", UserFile.class);
+            query.setParameter("fileUuid", fileUuid);
+            UserFile userFile = query.getResultStream().findFirst().orElseThrow(() -> new FileNotFoundException(String.format("file with file_uuid: %s not found", fileUuid)));
+            return new FileUploadStatusResponse(userFile.fileUuid,
+                    userFile.fileName,
+                    userFile.userName,
+                    userFile.status,
+                    userFile.uploadedAt
+                    );
+        } catch (Exception e) {
+            if (e instanceof FileNotFoundException fileNotFoundException)
+                throw fileNotFoundException;
+            Log.errorf("error occurred while obtaining file status: %s", fileUuid, e);
+            throw new RuntimeException("error occurred while obtaining file status", e);
+        }
     }
 
     @Override
