@@ -74,7 +74,7 @@ public class FileUploadServiceImpl implements FileUploadService {
                     userFile.userName,
                     userFile.status,
                     userFile.uploadedAt
-                    );
+            );
         } catch (Exception e) {
             if (e instanceof FileNotFoundException fileNotFoundException)
                 throw fileNotFoundException;
