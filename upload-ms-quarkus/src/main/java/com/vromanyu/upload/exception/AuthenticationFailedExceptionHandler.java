@@ -3,6 +3,7 @@ package com.vromanyu.upload.exception;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vromanyu.upload.dto.AuthenticationErrorResponse;
+import io.quarkus.logging.Log;
 import io.quarkus.security.AuthenticationFailedException;
 import io.vertx.ext.web.Router;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -29,6 +30,7 @@ public class AuthenticationFailedExceptionHandler {
                 try {
                     event.response().end(objectMapper.writeValueAsString(authenticationErrorResponse));
                 } catch (JsonProcessingException e) {
+                    Log.errorf("error occurred while serializing authentication error response: %s", e.getMessage());
                     throw new RuntimeException(e);
                 }
             }
