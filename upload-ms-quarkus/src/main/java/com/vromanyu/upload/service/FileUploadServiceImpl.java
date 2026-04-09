@@ -1,14 +1,17 @@
 package com.vromanyu.upload.service;
 
+import com.vromanyu.upload.annotations.FileUploadEvent;
 import com.vromanyu.upload.dto.*;
 import com.vromanyu.upload.entity.UserFile;
 import com.vromanyu.upload.enums.UploadStatus;
+import com.vromanyu.upload.event.FileUploadEventData;
 import com.vromanyu.upload.exception.FileNotFoundException;
 import com.vromanyu.upload.exception.FileNotUploadedException;
 import com.vromanyu.upload.exception.FilesNamesNotMatchException;
 import io.quarkus.logging.Log;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Event;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -27,6 +30,10 @@ public class FileUploadServiceImpl implements FileUploadService {
 
     @Inject
     EntityManager entityManager;
+
+    @Inject
+    @FileUploadEvent
+    Event<FileUploadEventData> fileUploadEvent;
 
     public void init(@Observes StartupEvent startupEvent) {
         Log.infof("Initializing %s", this.getClass().getSimpleName());
@@ -51,6 +58,15 @@ public class FileUploadServiceImpl implements FileUploadService {
             userFile.status = UploadStatus.CREATED;
             entityManager.persist(userFile);
             Log.infof("file saved successfully: %s", userFile);
+            FileUploadEventData fileUploadEventData = new FileUploadEventData(
+                    userFile.fileUuid,
+                    userFile.fileName,
+                    userFile.fileData,
+                    userFile.userName,
+                    userFile.uploadedAt
+            );
+            Log.infof("publishing file upload event");
+            fileUploadEvent.fireAsync(fileUploadEventData);
             return new FileUploadResponse(userFile.fileUuid,
                     userFile.fileName,
                     userFile.userName,
