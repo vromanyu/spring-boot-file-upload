@@ -1,6 +1,6 @@
 package com.vromanyu.upload.dto;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
-public record BadRequestResponse(String path, String message, OffsetDateTime timestamp, int code) {
+public record BadRequestResponse(String path, String message, Instant timestamp, int code) {
 }
